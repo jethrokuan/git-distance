@@ -1,11 +1,11 @@
 function git_distance -d "Check how far in front/behind a branch is from origin master"
-  if not test -z (git remote | grep "origin")
-    set -l branch (git_branch_name)
-    set -l output
-
-    set output $output (echo -n -s " ←" (git rev-list --left-only --count origin/master...HEAD 2> /dev/null))
-    set output $output (echo -n -s  (git rev-list --right-only --count origin/master...HEAD 2> /dev/null) "→")
-
-    echo $output
+  if test ! -z (git remote | grep "origin")
+    set -l git_right_stat (
+    command git rev-list --left-right --count 'HEAD...@{upstream}' ^ /dev/null | awk '
+    $1 > 0 { printf "∧" }
+    $2 > 0 { printf "∨" }
+    ')
+    
+    echo -n -s $git_right_stat
   end
 end
